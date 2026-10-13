@@ -94,6 +94,13 @@ The dev container configuration lives in [`.devcontainer/devcontainer.json`](.de
 
 ---
 
+## 📊 Pipeline Stages & Benchmarks
+
+For a complete breakdown of setup stages, runtime measurements, and cold vs. warm start metrics, see [STAGES.md](STAGES.md).
+
+---
+
 ## 📝 License
 
 MIT
+
