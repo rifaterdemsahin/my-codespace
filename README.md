@@ -69,10 +69,15 @@ The dev container configuration lives in [`.devcontainer/devcontainer.json`](.de
      codercom/code-server:latest
    ```
 
-3. **Open in Chrome:**
+4. **Retrieve Password (if prompted):**
+   ```bash
+   docker exec my-codespace-local cat /home/coder/.config/code-server/config.yaml
+   ```
+
+5. **Open in Chrome:**
    Navigate to [http://localhost:8080](http://localhost:8080) to code inside your browser with a full terminal and IDE environment.
 
-4. **Stop or Restart the container:**
+6. **Stop or Restart the container:**
    ```bash
    docker stop my-codespace-local
    docker start my-codespace-local
