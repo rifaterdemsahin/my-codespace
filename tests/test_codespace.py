@@ -35,8 +35,20 @@ class TestDevContainerConfig(unittest.TestCase):
         self.assertIn(8080, data["forwardPorts"], "Port 8080 must be forwarded")
         self.assertIn("customizations", data)
         vscode_exts = data.get("customizations", {}).get("vscode", {}).get("extensions", [])
-        self.assertIn("dbaeumer.vscode-eslint", vscode_exts)
-        self.assertIn("esbenp.prettier-vscode", vscode_exts)
+        expected_extensions = [
+            "dbaeumer.vscode-eslint",
+            "esbenp.prettier-vscode",
+            "saoudrizwan.claude-dev",
+            "kilocode.kilo-code",
+            "Google.geminicodeassist",
+            "GitHub.vscode-github-actions",
+            "bierner.markdown-mermaid",
+            "yzhang.markdown-all-in-one",
+            "donjayamanne.githistory",
+            "ms-azuretools.vscode-azureresourcegroups",
+        ]
+        for ext in expected_extensions:
+            self.assertIn(ext, vscode_exts, f"Extension {ext} must be in devcontainer.json")
 
 
 class TestDockerAndContainer(unittest.TestCase):
@@ -78,6 +90,27 @@ class TestDockerAndContainer(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, f"Antigravity CLI (agy) must run in container: {result.stderr}")
         self.assertTrue(len(result.stdout.strip()) > 0, "agy --version must return version output")
+
+    def test_container_extensions_installed(self):
+        result = subprocess.run(
+            ["sudo", "docker", "exec", "-u", "coder", CONTAINER_NAME, "code-server", "--list-extensions"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        self.assertEqual(result.returncode, 0, f"code-server list-extensions failed: {result.stderr}")
+        installed = result.stdout.lower()
+        for ext in [
+            "saoudrizwan.claude-dev",
+            "kilocode.kilo-code",
+            "google.geminicodeassist",
+            "github.vscode-github-actions",
+            "bierner.markdown-mermaid",
+            "yzhang.markdown-all-in-one",
+            "donjayamanne.githistory",
+            "ms-azuretools.vscode-azureresourcegroups",
+        ]:
+            self.assertIn(ext, installed, f"Extension {ext} must be installed in container")
 
 
 class TestHttpEndpoints(unittest.TestCase):

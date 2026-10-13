@@ -27,7 +27,15 @@ The dev container configuration lives in [`.devcontainer/devcontainer.json`](.de
     "vscode": {
       "extensions": [
         "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "saoudrizwan.claude-dev",
+        "kilocode.kilo-code",
+        "Google.geminicodeassist",
+        "GitHub.vscode-github-actions",
+        "bierner.markdown-mermaid",
+        "yzhang.markdown-all-in-one",
+        "donjayamanne.githistory",
+        "ms-azuretools.vscode-azureresourcegroups"
       ]
     }
   },
@@ -127,11 +135,13 @@ The test suite validates:
 
 ## 📊 Pipeline Stages & Benchmarks
 
-For a complete breakdown of setup stages, runtime measurements, and cold vs. warm start metrics, see [STAGES.md](STAGES.md).
+- For a complete breakdown of setup stages, runtime measurements, and cold vs. warm start metrics, see [STAGES.md](STAGES.md).
+- For the architectural thought process, decision trade-offs, and technical rationale, see [RATIONALE.md](RATIONALE.md).
 
 ---
 
 ## 📝 License
 
 MIT
+
 

@@ -5,7 +5,15 @@
     "vscode": {
       "extensions": [
         "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "saoudrizwan.claude-dev",
+        "kilocode.kilo-code",
+        "Google.geminicodeassist",
+        "GitHub.vscode-github-actions",
+        "bierner.markdown-mermaid",
+        "yzhang.markdown-all-in-one",
+        "donjayamanne.githistory",
+        "ms-azuretools.vscode-azureresourcegroups"
       ]
     }
   },

@@ -38,6 +38,7 @@ run_check "Docker daemon active" "sudo docker info"
 run_check "Container 'my-codespace-local' is running" "[ \$(sudo docker inspect -f '{{.State.Running}}' my-codespace-local 2>/dev/null) = 'true' ]"
 run_check "Container mounts ~/projects folder" "sudo docker exec my-codespace-local test -d /home/coder/projects/my-codespace"
 run_check "Antigravity CLI (agy) installed & runnable" "sudo docker exec -u coder my-codespace-local agy --version"
+run_check "Extensions installed (Cline, Gemini, KiloCode, etc.)" "sudo docker exec -u coder my-codespace-local code-server --list-extensions | grep 'saoudrizwan.claude-dev'"
 
 # 3. HTTP Endpoints & Web Workbench
 run_check "HTTP port 8080 open and responding" "curl -sI --max-time 3 http://localhost:8080"
