@@ -59,17 +59,21 @@ The dev container configuration lives in [`.devcontainer/devcontainer.json`](.de
    git pull origin main
    ```
 
-3. **Launch code-server with Docker (No password prompt, opens project directly):**
+3. **Launch code-server with Docker (With Antigravity and full `~/projects` workspace):**
    ```bash
    docker run -d \
      --name my-codespace-local \
      -p 8080:8080 \
-     -v "$(pwd):/home/coder/project" \
-     -w /home/coder/project \
+     -v "$HOME/projects:/home/coder/projects" \
+     -v "$HOME/.local/bin/agy:/usr/local/bin/agy:ro" \
+     -v "$HOME/.gemini:/home/coder/.gemini" \
+     -w /home/coder/projects \
      -u "$(id -u):$(id -g)" \
      codercom/code-server:latest \
      --auth none .
    ```
+   * **`~/projects` Mounted:** Code-server opens directly into `/home/coder/projects`, giving you full access to all your project subfolders in the explorer sidebar.
+   * **Antigravity Installed:** `agy` is mapped directly to `/usr/local/bin/agy`, with authenticated session credentials mapped via `~/.gemini`. You can open the built-in terminal inside Chrome and immediately use `agy`.
 
 4. **Open in Chrome:**
    - **If running directly on your laptop (MacBook / PC):**

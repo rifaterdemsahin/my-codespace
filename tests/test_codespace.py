@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Automated Test Suite for Local & Cloud Codespace
-Validates devcontainer configuration, Docker container state, HTTP endpoints, and workbench mounting.
+Validates devcontainer configuration, Docker container state, Antigravity CLI,
+projects directory mounting, and HTTP workbench accessibility.
 """
 
 import json
@@ -39,7 +40,7 @@ class TestDevContainerConfig(unittest.TestCase):
 
 
 class TestDockerAndContainer(unittest.TestCase):
-    """Validates Docker daemon and running container state."""
+    """Validates Docker daemon, running container state, and mounts."""
 
     def test_docker_daemon_running(self):
         result = subprocess.run(
@@ -60,20 +61,29 @@ class TestDockerAndContainer(unittest.TestCase):
         self.assertEqual(result.returncode, 0, f"Container {CONTAINER_NAME} must exist")
         self.assertEqual(result.stdout.strip(), "true", f"Container {CONTAINER_NAME} must be in running state")
 
-    def test_project_volume_mounted(self):
+    def test_projects_volume_mounted(self):
         result = subprocess.run(
-            ["sudo", "docker", "exec", CONTAINER_NAME, "test", "-f", "/home/coder/project/README.md"],
+            ["sudo", "docker", "exec", CONTAINER_NAME, "test", "-d", "/home/coder/projects/my-codespace"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
-        self.assertEqual(result.returncode, 0, "Host repository must be mounted at /home/coder/project")
+        self.assertEqual(result.returncode, 0, "~/projects must be mounted at /home/coder/projects")
+
+    def test_antigravity_installed_and_functional(self):
+        result = subprocess.run(
+            ["sudo", "docker", "exec", "-u", "coder", CONTAINER_NAME, "agy", "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        self.assertEqual(result.returncode, 0, f"Antigravity CLI (agy) must run in container: {result.stderr}")
+        self.assertTrue(len(result.stdout.strip()) > 0, "agy --version must return version output")
 
 
 class TestHttpEndpoints(unittest.TestCase):
     """Validates HTTP endpoints and web workbench availability."""
 
-    def test_root_redirects_to_project_without_auth(self):
-        # We prevent auto-following redirects to inspect the 302 Location header
+    def test_root_redirects_to_projects_without_auth(self):
         class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
             def http_error_302(self, req, fp, code, msg, headers):
                 return fp
@@ -84,15 +94,14 @@ class TestHttpEndpoints(unittest.TestCase):
         self.assertEqual(resp.status, 302, "Root URL should return HTTP 302 redirect")
         location = resp.headers.get("Location")
         self.assertTrue(
-            location.endswith("?folder=/home/coder/project"),
-            f"Expected redirect directly to project folder, got: {location}"
+            location.endswith("?folder=~/projects") or location.endswith("?folder=/home/coder/projects"),
+            f"Expected redirect directly to ~/projects, got: {location}"
         )
 
     def test_workbench_html_loads(self):
-        # Follow redirects to get the actual HTML page
-        req = urllib.request.Request(f"{BASE_URL}/?folder=/home/coder/project", headers={"User-Agent": "HealthCheckTest/1.0"})
+        req = urllib.request.Request(f"{BASE_URL}/?folder=/home/coder/projects", headers={"User-Agent": "HealthCheckTest/1.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
-            self.assertEqual(resp.status, 200, "Project folder endpoint must return HTTP 200")
+            self.assertEqual(resp.status, 200, "Projects folder endpoint must return HTTP 200")
             content = resp.read().decode("utf-8")
             self.assertIn("vscode-workbench", content, "Response must contain VS Code web workbench configuration")
 

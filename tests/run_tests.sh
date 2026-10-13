@@ -36,12 +36,13 @@ run_check "devcontainer forwards port 8080" "python3 -c 'import json; assert 808
 # 2. Docker & Container Service
 run_check "Docker daemon active" "sudo docker info"
 run_check "Container 'my-codespace-local' is running" "[ \$(sudo docker inspect -f '{{.State.Running}}' my-codespace-local 2>/dev/null) = 'true' ]"
-run_check "Container mounts project workspace" "sudo docker exec my-codespace-local test -f /home/coder/project/README.md"
+run_check "Container mounts ~/projects folder" "sudo docker exec my-codespace-local test -d /home/coder/projects/my-codespace"
+run_check "Antigravity CLI (agy) installed & runnable" "sudo docker exec -u coder my-codespace-local agy --version"
 
 # 3. HTTP Endpoints & Web Workbench
 run_check "HTTP port 8080 open and responding" "curl -sI --max-time 3 http://localhost:8080"
-run_check "HTTP redirects directly to project (auth disabled)" "curl -sI http://localhost:8080 | grep -q 'Location: ./?folder=/home/coder/project'"
-run_check "VS Code Web Workbench HTML serves 200 OK" "curl -sL http://localhost:8080 | grep -q 'vscode-workbench'"
+run_check "HTTP redirects directly to ~/projects (auth disabled)" "curl -sI http://localhost:8080/ | grep -E 'Location: \./\?folder=(~/projects|/home/coder/projects)'"
+run_check "VS Code Web Workbench HTML serves 200 OK" "curl -sL http://localhost:8080/ | grep 'vscode-workbench'"
 
 echo ""
 echo -e "${BLUE}--- Running Python Unit Tests ---${NC}"

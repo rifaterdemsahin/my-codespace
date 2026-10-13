@@ -53,26 +53,28 @@ flowchart TD
 - **Duration:** 27 seconds (`19:02:30Z` – `19:02:57Z`).
 
 ### Stage 5: Container Instantiation
-- **Action:** Executed container run with volume mount and port binding:
+- **Action:** Executed container run mounting full `~/projects` workspace, Antigravity CLI (`agy`), and credentials:
   ```bash
   docker run -d \
     --name my-codespace-local \
     -p 8080:8080 \
-    -v "$(pwd):/home/coder/project" \
+    -v "$HOME/projects:/home/coder/projects" \
+    -v "$HOME/.local/bin/agy:/usr/local/bin/agy:ro" \
+    -v "$HOME/.gemini:/home/coder/.gemini" \
+    -w /home/coder/projects \
     -u "$(id -u):$(id -g)" \
     codercom/code-server:latest \
-    --auth none \
-    /home/coder/project
+    --auth none .
   ```
 - **Duration:** < 1 second.
-- **Container ID:** `747ac4f31f5ffd248b968a5c20d964c2272933d65bd958b092fcafb37a125674`.
+- **Container ID:** `9ac2ce60f30c4aadfdf03a74e523cd8be5819eeda0ee0c9bb454668d32f9826f`.
 
 ### Stage 6: Code-Server Initialization
-- **Action:** `code-server 4.141.0` generated default configuration `/home/coder/.config/code-server/config.yaml` and opened listener on `http://0.0.0.0:8080/`.
+- **Action:** `code-server 4.141.0` opened listener on `http://0.0.0.0:8080/` with authentication disabled.
 - **Duration:** ~222 ms (`19:02:57.455Z` – `19:02:57.677Z`).
 
 ### Stage 7: Health Check & Auth Verification
-- **Action:** Checked HTTP response headers (`curl -sI http://localhost:8080`) confirming immediate 302 redirect to `/?folder=/home/coder/project`.
+- **Action:** Checked HTTP response headers (`curl -sI http://localhost:8080/`) confirming immediate 302 redirect to `/?folder=/home/coder/projects`.
 - **Duration:** ~2 seconds.
 
 ### Stage 8: Automated Test Suite & Validation
