@@ -14,8 +14,9 @@ This document tracks all the setup and execution stages for running the local an
 | **4** | **Image Pull (`code-server`)** | Downloaded layers and extracted `codercom/code-server:latest` (~245 MB compressed). | **~27 sec** | ✅ Completed |
 | **5** | **Container Instantiation** | Spawned daemonized container `my-codespace-local` with port mapping (`8080:8080`) and volume bind mount. | **< 1 sec** | ✅ Completed |
 | **6** | **Service Readiness & Auth Setup** | `code-server` started HTTP listener on `0.0.0.0:8080` and generated session auth config. | **~0.22 sec** | ✅ Completed |
-| **7** | **Health Check & Verification** | Verified HTTP `302 Found` redirect to `./login` and extracted session password. | **~2 sec** | ✅ Completed |
-| **Total** | **End-to-End Cold Start** | From bare OS environment to fully operational Web IDE. | **~52 sec** | ✅ Operational |
+| **7** | **Health Check & Verification** | Verified HTTP `302 Found` redirect to project folder. | **~2 sec** | ✅ Completed |
+| **8** | **Automated Test Suite** | Ran shell and Python unit tests (`./tests/run_tests.sh`) across config, Docker, volume, & HTTP. | **~0.16 sec** | ✅ 100% Passed |
+| **Total** | **End-to-End Cold Start + Tests** | From bare OS environment to fully operational & verified Web IDE. | **~52 sec** | ✅ Operational |
 
 ---
 
@@ -28,7 +29,8 @@ flowchart TD
     C --> D["Stage 4: Pull Image codercom/code-server<br/>(~27s)"]
     D --> E["Stage 5: Spawn Container & Mount Volume<br/>(&lt;1s)"]
     E --> F["Stage 6: Code-Server Initialization<br/>(~0.22s)"]
-    F --> G["Stage 7: HTTP Health Check & Password Retrieval<br/>(~2s)"]
+    F --> G["Stage 7: HTTP Health Check<br/>(~2s)"]
+    G --> H["Stage 8: Automated Test Suite<br/>(~0.16s)"]
 ```
 
 ### Stage 1: Repository & Dev Container Setup
@@ -69,9 +71,14 @@ flowchart TD
 - **Action:** `code-server 4.141.0` generated default configuration `/home/coder/.config/code-server/config.yaml` and opened listener on `http://0.0.0.0:8080/`.
 - **Duration:** ~222 ms (`19:02:57.455Z` – `19:02:57.677Z`).
 
-### Stage 7: Health Check & Password Retrieval
-- **Action:** Checked HTTP response header via `curl -sI http://localhost:8080` (returned HTTP `302 Found` redirecting to `./login`) and retrieved auth token.
+### Stage 7: Health Check & Auth Verification
+- **Action:** Checked HTTP response headers (`curl -sI http://localhost:8080`) confirming immediate 302 redirect to `/?folder=/home/coder/project`.
 - **Duration:** ~2 seconds.
+
+### Stage 8: Automated Test Suite & Validation
+- **Action:** Executed test runner [`tests/run_tests.sh`](tests/run_tests.sh) and unit tests [`tests/test_codespace.py`](tests/test_codespace.py) covering config, Docker daemon, container state, volume mounting, and HTTP HTML status.
+- **Duration:** ~0.16 seconds.
+- **Result:** 7/7 tests passed (100% pass rate).
 
 ---
 
