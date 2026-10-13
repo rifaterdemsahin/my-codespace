@@ -1,0 +1,14 @@
+{
+  "name": "My Local & Cloud Codespace",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "forwardPorts": [8080],
+  "postCreateCommand": "echo 'Codespace container initialized successfully!'"
+}
