@@ -59,25 +59,30 @@ The dev container configuration lives in [`.devcontainer/devcontainer.json`](.de
    git pull origin main
    ```
 
-3. **Launch code-server with Docker:**
+3. **Launch code-server with Docker (No password prompt, opens project directly):**
    ```bash
    docker run -d \
      --name my-codespace-local \
      -p 8080:8080 \
      -v "$(pwd):/home/coder/project" \
      -u "$(id -u):$(id -g)" \
-     codercom/code-server:latest
+     codercom/code-server:latest \
+     --auth none \
+     /home/coder/project
    ```
 
-4. **Retrieve Password (if prompted):**
-   ```bash
-   docker exec my-codespace-local cat /home/coder/.config/code-server/config.yaml
-   ```
+4. **Open in Chrome:**
+   - **If running directly on your laptop (MacBook / PC):**
+     Navigate to [http://localhost:8080](http://localhost:8080).
+   - **If running on a remote server, VM, or Proxmox container (e.g. `192.168.1.69`):**
+     Navigate to `http://<SERVER_IP>:8080` (e.g. [http://192.168.1.69:8080](http://192.168.1.69:8080)).
+   - **Alternative (SSH port forwarding to use localhost on Mac):**
+     ```bash
+     ssh -N -L 8080:localhost:8080 user@192.168.1.69
+     ```
+     Then open [http://localhost:8080](http://localhost:8080).
 
-5. **Open in Chrome:**
-   Navigate to [http://localhost:8080](http://localhost:8080) to code inside your browser with a full terminal and IDE environment.
-
-6. **Stop or Restart the container:**
+5. **Stop or Restart the container:**
    ```bash
    docker stop my-codespace-local
    docker start my-codespace-local

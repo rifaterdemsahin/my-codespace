@@ -58,7 +58,9 @@ flowchart TD
     -p 8080:8080 \
     -v "$(pwd):/home/coder/project" \
     -u "$(id -u):$(id -g)" \
-    codercom/code-server:latest
+    codercom/code-server:latest \
+    --auth none \
+    /home/coder/project
   ```
 - **Duration:** < 1 second.
 - **Container ID:** `747ac4f31f5ffd248b968a5c20d964c2272933d65bd958b092fcafb37a125674`.
