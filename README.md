@@ -42,16 +42,24 @@ The dev container configuration lives in [`.devcontainer/devcontainer.json`](.de
 
 ### Option 1: Run Locally in Chrome (Docker / OrbStack)
 
-Run this repository inside Google Chrome using `code-server`:
+> [!IMPORTANT]
+> **Start Docker First:** Make sure Docker Desktop, OrbStack, or the Docker daemon is running on your machine before running the container commands.
 
-1. **Clone or pull the repository:**
+1. **Ensure Docker is Running:**
+   - **macOS / Windows:** Open Docker Desktop or OrbStack from your Applications and ensure the status shows green / running.
+   - **Linux:** Ensure the service is active:
+     ```bash
+     sudo systemctl start docker
+     ```
+
+2. **Clone or pull the repository:**
    ```bash
    git clone git@github.com:rifaterdemsahin/my-codespace.git
    cd my-codespace
    git pull origin main
    ```
 
-2. **Launch code-server with Docker:**
+3. **Launch code-server with Docker:**
    ```bash
    docker run -d \
      --name my-codespace-local \
